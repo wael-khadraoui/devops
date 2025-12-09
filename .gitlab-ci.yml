@@ -1,38 +1,12 @@
 stages:
-  - build
   - test
   - deploy
-
-variables:
-  DOCKER_IMAGE: "$CI_REGISTRY_IMAGE/app"
-  DOCKER_TAG: "latest"
 
 before_script:
   - echo "Pipeline starting..."
 
 # -------------------------
-# 1) BUILD & PUSH IMAGE
-# -------------------------
-build_app:
-  stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - echo "Logging in to Docker Registry..."
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - echo "Building Docker image..."
-    - docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
-    - echo "Pushing image to registry..."
-    - docker push $DOCKER_IMAGE:$DOCKER_TAG
-    - echo "Success - Image pushed to registry"
-  only:
-    - develop
-    - main
-  allow_failure: true
-
-# -------------------------
-# 2) RUN TESTS
+# 1) RUN TESTS
 # -------------------------
 test_app:
   stage: test
@@ -53,7 +27,7 @@ test_app:
   allow_failure: true
 
 # -------------------------
-# 3) DEPLOY TO PRODUCTION
+# 2) DEPLOY TO PRODUCTION
 # -------------------------
 deploy_production:
   stage: deploy
