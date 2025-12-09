@@ -64,8 +64,8 @@ deploy_railway:
   stage: deploy
   image: node:18-alpine
   before_script:
-    - apk add --no-cache curl bash git libc6-compat
-    - npm install -g @railway/cli@latest
+    - apk add --no-cache curl bash git
+    - sh -c "$(curl -fsSL https://railway.app/install.sh)"
   script:
     - |
         set -e
