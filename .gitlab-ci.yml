@@ -84,7 +84,7 @@ deploy_railway:
         export RAILWAY_TOKEN="$RAILWAY_TOKEN"
         echo "Writing Railway config..."
         mkdir -p ~/.railway
-        printf '{ "user": { "token": "%s" } }\n' "$RAILWAY_TOKEN" > ~/.railway/config.json
+        printf '{"token":"%s"}\n' "$RAILWAY_TOKEN" > ~/.railway/config.json
         cat ~/.railway/config.json
         railway whoami || { echo "whoami failed"; exit 1; }
         echo "Linking project $RAILWAY_PROJECT_ID..."
