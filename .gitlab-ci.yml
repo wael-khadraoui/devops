@@ -64,8 +64,7 @@ deploy_railway:
   stage: deploy
   image: node:18
   before_script:
-    - curl -fsSL https://railway.app/install.sh | sh
-    - export PATH="/root/.railway/bin:$PATH"
+    - npm install -g @railway/cli@4.12.0
   script:
     - |
         set -e
