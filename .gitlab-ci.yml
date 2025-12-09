@@ -6,9 +6,15 @@ stages:
 variables:
   DOCKER_HUB_IMAGE: "$DOCKER_HUB_USERNAME/task-manager"
   DOCKER_TAG: "latest"
+  NODE_ENV: "production"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
 
 before_script:
-  - echo "Pipeline starting..."
+  - echo "Pipeline starting... Commit: $CI_COMMIT_SHORT_SHA"
 
 # -------------------------
 # 1) BUILD & PUSH TO DOCKER HUB
@@ -52,9 +58,15 @@ test_app:
     expire_in: 1 week
     paths:
       - coverage/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
   only:
     - merge_requests
     - develop
+    - main
   allow_failure: true
 
 # -------------------------
@@ -70,7 +82,7 @@ deploy_vercel:
           echo "Missing VERCEL_DEPLOY_HOOK CI variable"; exit 1; fi
         echo "Triggering Vercel deploy hook..."
         curl -X POST "$VERCEL_DEPLOY_HOOK"
-        echo "Vercel deploy hook triggered"
+        echo "Vercel deploy hook triggered successfully"
   only:
     - main
   when: manual
