@@ -80,7 +80,9 @@ deploy_railway:
           echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
         echo "Creating Railway config for CI..."
         mkdir -p ~/.railway
-        echo "{\"token\":\"$RAILWAY_TOKEN\"}" > ~/.railway/config.json
+        cat > ~/.railway/config.json << EOF
+{"user":{"token":"$RAILWAY_TOKEN"}}
+EOF
         railway whoami
         echo "Linking project $RAILWAY_PROJECT_ID..."
         railway link "$RAILWAY_PROJECT_ID"
