@@ -67,27 +67,26 @@ deploy_railway:
     - apk add --no-cache curl bash git libc6-compat
     - npm install -g @railway/cli@latest
   script:
-    - echo "Deploying to Railway..."
-    - echo "npm prefix: $(npm config get prefix)" && ls -l /usr/local/bin | head -n 20
-    - which railway || { echo "railway not found on PATH"; exit 1; }
-    - railway --version || { echo "railway --version failed"; ls -l /usr/local/bin/railway || true; ldd /usr/local/bin/railway || true; exit 1; }
     - |
-      if [ -z "$RAILWAY_TOKEN" ]; then
-        echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
-      if [ -z "$RAILWAY_PROJECT_ID" ]; then
-        echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
-      export RAILWAY_TOKEN="$RAILWAY_TOKEN"
-      echo "Authenticating with Railway token (masked)..."
-      railway status --json || echo "railway status: unable to fetch (will continue)"
-      echo "Linking project $RAILWAY_PROJECT_ID..."
-      railway link --project "$RAILWAY_PROJECT_ID" --key "$RAILWAY_TOKEN" || { echo "railway link failed"; exit 1; }
-      echo "Deploying..."
-      railway up --detach || { echo "railway up failed"; exit 1; }
-      echo "Deployment to Railway completed successfully"
-      echo "If custom domain: set it in Railway dashboard (default *.up.railway.app)"
-  environment:
-    name: production
-    url: https://your-app.up.railway.app
+        set -e
+        echo "Deploying to Railway..."
+        echo "npm prefix: $(npm config get prefix)"
+        ls -l /usr/local/bin | head -n 20
+        which railway
+        railway --version
+        if [ -z "$RAILWAY_TOKEN" ]; then
+          echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
+        if [ -z "$RAILWAY_PROJECT_ID" ]; then
+          echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
+        export RAILWAY_TOKEN="$RAILWAY_TOKEN"
+        echo "Authenticating with Railway token (masked)..."
+        railway status --json || echo "railway status: unable to fetch (will continue)"
+        echo "Linking project $RAILWAY_PROJECT_ID..."
+        railway link --project "$RAILWAY_PROJECT_ID" --key "$RAILWAY_TOKEN"
+        echo "Deploying..."
+        railway up --detach
+        echo "Deployment to Railway completed successfully"
+        echo "If custom domain: set it in Railway dashboard (default *.up.railway.app)"
   only:
     - main
   when: manual
