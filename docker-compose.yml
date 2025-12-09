@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Application Node.js
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: task-manager-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-task_manager}
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+    depends_on:
+      - mysql
+    networks:
+      - task-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  # Base de données MySQL
+  mysql:
+    image: mysql:8.0-alpine
+    container_name: task-manager-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD:-password}
+      - MYSQL_DATABASE=${DB_NAME:-task_manager}
+      - MYSQL_USER=${DB_USER:-taskuser}
+      - MYSQL_PASSWORD=${DB_PASSWORD:-password}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - task-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  task-network:
+    driver: bridge
