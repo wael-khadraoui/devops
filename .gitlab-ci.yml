@@ -53,18 +53,28 @@ test_app:
   allow_failure: true
 
 # -------------------------
-# 3) DEPLOY TO PRODUCTION
+# 3) DEPLOY TO RAILWAY
 # -------------------------
-deploy_production:
+deploy_railway:
   stage: deploy
   image: alpine:latest
+  before_script:
+    - apk add --no-cache curl
   script:
-    - echo "Deployment job configured"
-    - echo "To enable: Configure DEPLOY_SERVER_IP and DEPLOY_SSH_KEY in CI/CD Variables"
+    - echo "Triggering Railway deployment..."
+    - |
+      if [ -n "$RAILWAY_WEBHOOK_URL" ]; then
+        curl -X POST $RAILWAY_WEBHOOK_URL
+        echo "Railway deployment triggered successfully"
+      else
+        echo "Railway webhook not configured"
+        echo "To enable: Set RAILWAY_WEBHOOK_URL in GitLab CI/CD Variables"
+      fi
   environment:
     name: production
-    url: https://your-app-url.com
+    url: https://your-app.railway.app
   only:
     - main
+    - develop
   when: manual
   allow_failure: true
