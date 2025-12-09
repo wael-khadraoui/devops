@@ -68,14 +68,17 @@ deploy_railway:
     - npm install -g @railway/cli
   script:
     - echo "Deploying to Railway..."
+    - railway --version
     - |
       if [ -z "$RAILWAY_TOKEN" ]; then
         echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
       if [ -z "$RAILWAY_PROJECT_ID" ]; then
         echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
       export RAILWAY_TOKEN="$RAILWAY_TOKEN"
+      echo "Authenticating with Railway token (masked)..."
+      railway status --json || echo "railway status: unable to fetch (will continue)"
       echo "Linking project $RAILWAY_PROJECT_ID..."
-      railway link "$RAILWAY_PROJECT_ID" || { echo "railway link failed"; exit 1; }
+      railway link --project "$RAILWAY_PROJECT_ID" --key "$RAILWAY_TOKEN" || { echo "railway link failed"; exit 1; }
       echo "Deploying..."
       railway up --detach || { echo "railway up failed"; exit 1; }
       echo "Deployment to Railway completed successfully"
