@@ -64,8 +64,8 @@ deploy_railway:
   stage: deploy
   image: node:18-alpine
   before_script:
-    - apk add --no-cache curl bash git
-    - sh -c "$(curl -fsSL https://railway.app/install.sh)"
+    - apk add --no-cache curl bash git tar gzip
+    - curl -fsSL https://railway.app/install.sh | sh
   script:
     - |
         set -e
