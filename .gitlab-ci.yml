@@ -82,7 +82,7 @@ deploy_railway:
         echo "Authenticating with Railway token (masked)..."
         railway status --json || echo "railway status: unable to fetch (will continue)"
         echo "Linking project $RAILWAY_PROJECT_ID..."
-        railway link --project "$RAILWAY_PROJECT_ID" --key "$RAILWAY_TOKEN"
+        railway link --project "$RAILWAY_PROJECT_ID"
         echo "Deploying..."
         railway up --detach
         echo "Deployment to Railway completed successfully"
