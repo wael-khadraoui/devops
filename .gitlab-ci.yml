@@ -69,21 +69,17 @@ deploy_railway:
   script:
     - echo "Deploying to Railway..."
     - |
-      if [ -n "$RAILWAY_TOKEN" ]; then
-        export RAILWAY_TOKEN=$RAILWAY_TOKEN
-        railway link $RAILWAY_PROJECT_ID
-        railway up --detach
-        echo "Deployment to Railway completed successfully"
-        echo "Your app is available at: https://your-app.up.railway.app"
-      else
-        echo "Railway token not configured"
-        echo "Steps to deploy:"
-        echo "1. Install Railway CLI: npm install -g @railway/cli"
-        echo "2. Login: railway login"
-        echo "3. Get token: railway whoami --token"
-        echo "4. Add RAILWAY_TOKEN to GitLab CI/CD Variables"
-        exit 1
-      fi
+      if [ -z "$RAILWAY_TOKEN" ]; then
+        echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
+      if [ -z "$RAILWAY_PROJECT_ID" ]; then
+        echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
+      export RAILWAY_TOKEN="$RAILWAY_TOKEN"
+      echo "Linking project $RAILWAY_PROJECT_ID..."
+      railway link "$RAILWAY_PROJECT_ID" || { echo "railway link failed"; exit 1; }
+      echo "Deploying..."
+      railway up --detach || { echo "railway up failed"; exit 1; }
+      echo "Deployment to Railway completed successfully"
+      echo "If custom domain: set it in Railway dashboard (default *.up.railway.app)"
   environment:
     name: production
     url: https://your-app.up.railway.app
