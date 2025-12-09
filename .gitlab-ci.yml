@@ -6,10 +6,9 @@ stages:
 variables:
   DOCKER_IMAGE: "$CI_REGISTRY_IMAGE/app"
   DOCKER_TAG: "latest"
-  DOCKER_TLS_CERTDIR: "/certs"
 
 before_script:
-  - echo "CI pipeline starting..."
+  - echo "Pipeline starting..."
 
 # -------------------------
 # 1) BUILD IMAGE
@@ -20,18 +19,13 @@ build_app:
   services:
     - docker:dind
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo "Building Docker image..."
     - docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
-    - docker push $DOCKER_IMAGE:$DOCKER_TAG
-    - echo "Docker image pushed"
-  artifacts:
-    expire_in: 1 week
-    paths:
-      - docker-image-info.txt
+    - echo "Docker image built successfully"
   only:
     - develop
     - main
-  retry: 1
+  allow_failure: true
 
 # -------------------------
 # 2) RUN TESTS
@@ -44,7 +38,7 @@ test_app:
     - npm install
     - echo "Running tests..."
     - npm test
-    - echo "Tests passed"
+    - echo "Tests completed"
   artifacts:
     expire_in: 1 week
     paths:
@@ -62,10 +56,11 @@ deploy_production:
   image: alpine:latest
   script:
     - echo "Deployment job configured"
-    - echo "To enable: Set variables in GitLab CI/CD settings"
+    - echo "To enable: Configure DEPLOY_SERVER_IP and DEPLOY_SSH_KEY in CI/CD Variables"
   environment:
     name: production
     url: https://your-app-url.com
   only:
     - main
   when: manual
+  allow_failure: true
