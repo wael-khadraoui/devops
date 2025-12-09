@@ -74,6 +74,8 @@ deploy_railway:
         ls -l /usr/local/bin | head -n 20
         which railway
         railway --version
+        echo "RAILWAY_TOKEN length: ${#RAILWAY_TOKEN}"
+        echo "RAILWAY_PROJECT_ID: $RAILWAY_PROJECT_ID"
         if [ -z "$RAILWAY_TOKEN" ]; then
           echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
         if [ -z "$RAILWAY_PROJECT_ID" ]; then
