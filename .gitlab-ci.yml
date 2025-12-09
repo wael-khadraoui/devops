@@ -58,35 +58,19 @@ test_app:
   allow_failure: true
 
 # -------------------------
-# 3) DEPLOY TO RAILWAY
+# 3) TRIGGER VERCEL DEPLOY HOOK
 # -------------------------
-deploy_railway:
+deploy_vercel:
   stage: deploy
-  image: node:18
-  before_script:
-    - npm install -g @railway/cli@4.12.0
+  image: curlimages/curl:8.6.0
   script:
     - |
         set -e
-        echo "Deploying to Railway..."
-        echo "npm prefix: $(npm config get prefix)"
-        ls -l /usr/local/bin | head -n 20
-        which railway
-        railway --version
-        echo "RAILWAY_TOKEN length: ${#RAILWAY_TOKEN}"
-        echo "RAILWAY_PROJECT_ID: $RAILWAY_PROJECT_ID"
-        if [ -z "$RAILWAY_TOKEN" ]; then
-          echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
-        if [ -z "$RAILWAY_PROJECT_ID" ]; then
-          echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
-        export RAILWAY_TOKEN="$RAILWAY_TOKEN"
-        railway whoami
-        echo "Linking project $RAILWAY_PROJECT_ID..."
-        railway link --project "$RAILWAY_PROJECT_ID"
-        echo "Deploying..."
-        railway up --detach
-        echo "Deployment to Railway completed successfully"
-        echo "If custom domain: set it in Railway dashboard (default *.up.railway.app)"
+        if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+          echo "Missing VERCEL_DEPLOY_HOOK CI variable"; exit 1; fi
+        echo "Triggering Vercel deploy hook..."
+        curl -X POST "$VERCEL_DEPLOY_HOOK"
+        echo "Vercel deploy hook triggered"
   only:
     - main
   when: manual
