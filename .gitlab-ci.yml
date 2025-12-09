@@ -64,11 +64,13 @@ deploy_railway:
   stage: deploy
   image: node:18-alpine
   before_script:
-    - apk add --no-cache curl bash git
-    - npm install -g @railway/cli
+    - apk add --no-cache curl bash git libc6-compat
+    - npm install -g @railway/cli@latest
   script:
     - echo "Deploying to Railway..."
-    - railway --version
+    - echo "npm prefix: $(npm config get prefix)" && ls -l /usr/local/bin | head -n 20
+    - which railway || { echo "railway not found on PATH"; exit 1; }
+    - railway --version || { echo "railway --version failed"; ls -l /usr/local/bin/railway || true; ldd /usr/local/bin/railway || true; exit 1; }
     - |
       if [ -z "$RAILWAY_TOKEN" ]; then
         echo "Missing RAILWAY_TOKEN in CI variables"; exit 1; fi
