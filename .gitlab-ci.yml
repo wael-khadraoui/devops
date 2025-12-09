@@ -57,24 +57,32 @@ test_app:
 # -------------------------
 deploy_railway:
   stage: deploy
-  image: alpine:latest
+  image: node:18-alpine
   before_script:
-    - apk add --no-cache curl
+    - apk add --no-cache curl bash git
+    - npm install -g @railway/cli
   script:
-    - echo "Triggering Railway deployment..."
+    - echo "Deploying to Railway..."
     - |
-      if [ -n "$RAILWAY_WEBHOOK_URL" ]; then
-        curl -X POST $RAILWAY_WEBHOOK_URL
-        echo "Railway deployment triggered successfully"
+      if [ -n "$RAILWAY_TOKEN" ]; then
+        export RAILWAY_TOKEN=$RAILWAY_TOKEN
+        railway link $RAILWAY_PROJECT_ID
+        railway up --detach
+        echo "Deployment to Railway completed successfully"
+        echo "Your app is available at: https://your-app.up.railway.app"
       else
-        echo "Railway webhook not configured"
-        echo "To enable: Set RAILWAY_WEBHOOK_URL in GitLab CI/CD Variables"
+        echo "Railway token not configured"
+        echo "Steps to deploy:"
+        echo "1. Install Railway CLI: npm install -g @railway/cli"
+        echo "2. Login: railway login"
+        echo "3. Get token: railway whoami --token"
+        echo "4. Add RAILWAY_TOKEN to GitLab CI/CD Variables"
+        exit 1
       fi
   environment:
     name: production
-    url: https://your-app.railway.app
+    url: https://your-app.up.railway.app
   only:
     - main
-    - develop
   when: manual
-  allow_failure: true
+  allow_failure: false
