@@ -1,12 +1,38 @@
 stages:
+  - build
   - test
   - deploy
+
+variables:
+  DOCKER_HUB_IMAGE: "$DOCKER_HUB_USERNAME/task-manager"
+  DOCKER_TAG: "latest"
 
 before_script:
   - echo "Pipeline starting..."
 
 # -------------------------
-# 1) RUN TESTS
+# 1) BUILD & PUSH TO DOCKER HUB
+# -------------------------
+build_app:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "Logging in to Docker Hub..."
+    - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin
+    - echo "Building Docker image..."
+    - docker build -t $DOCKER_HUB_IMAGE:$DOCKER_TAG .
+    - echo "Pushing image to Docker Hub..."
+    - docker push $DOCKER_HUB_IMAGE:$DOCKER_TAG
+    - echo "Success - Image pushed to Docker Hub"
+  only:
+    - develop
+    - main
+  allow_failure: true
+
+# -------------------------
+# 2) RUN TESTS
 # -------------------------
 test_app:
   stage: test
@@ -27,7 +53,7 @@ test_app:
   allow_failure: true
 
 # -------------------------
-# 2) DEPLOY TO PRODUCTION
+# 3) DEPLOY TO PRODUCTION
 # -------------------------
 deploy_production:
   stage: deploy
