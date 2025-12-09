@@ -1,52 +1,150 @@
-# projet-devops-2025
+# DevOps Task Manager - CI/CD Project
 
+## Project Description
+A collaborative Node.js task management application with automated CI/CD pipeline, Docker containerization, and cloud deployment to Vercel.
 
+## Team Members and Roles
+- **Product Owner / Project Leader:** [Team Lead Name]
+- **Team Members:** [Member 1], [Member 2], [Member 3]
 
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-* [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
+## Architecture
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/rawaaaa/projet-devops-2025.git
-git branch -M main
-git push -uf origin main
+┌─────────────────────────────────────────────────────────┐
+│                    Client (Frontend)                     │
+│              (HTML, CSS, JavaScript, Socket.io)         │
+└────────────────┬────────────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────────────┐
+│              Express.js API Server                       │
+│  (Routes: /users, /tasks, WebSocket Support)           │
+└────────────────┬────────────────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────────────────┐
+│          MySQL Database                                  │
+│  (Users, Tasks, Authentication)                        │
+└─────────────────────────────────────────────────────────┘
+
+CI/CD Pipeline (GitLab):
+  Build → Test → Deploy (Vercel)
 ```
 
-## Integrate with your tools
+See `ARCHITECTURE.md` for detailed technical architecture.
 
-* [Set up project integrations](https://gitlab.com/rawaaaa/projet-devops-2025/-/settings/integrations)
+## Installation and Launch
 
-## Collaborate with your team
+### Local Development
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/wael-khadraoui/devops.git
+   cd devops
+   ```
 
-* [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Test and Deploy
+3. **Create .env file:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your MySQL credentials
+   ```
 
-Use the built-in continuous integration in GitLab.
+4. **Run with Docker Compose:**
+   ```bash
+   docker-compose up --build
+   ```
+   - App runs on `http://localhost:3000`
+   - MySQL on `localhost:3306`
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+5. **Run locally (without Docker):**
+   ```bash
+   npm start
+   ```
 
-***
+### Docker
+```bash
+# Build image
+docker build -t devops-task-manager .
 
-# Editing this README
+# Run with docker-compose
+docker-compose up -d
+```
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Required Environment Variables
+```env
+# Database
+DB_HOST=mysql
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=password
+DB_NAME=task_manager
+
+# Server
+PORT=3000
+NODE_ENV=production
+```
+
+See `.env.example` for all variables.
+
+## Testing
+```bash
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+Current test coverage: >60% (Unit tests for core functions)
+
+## Deployed Application
+- **URL:** https://devops-task-manager.vercel.app
+- **Status:** [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat&logo=vercel)](https://devops-task-manager.vercel.app)
+
+## CI/CD Pipeline
+[![GitLab Pipeline](https://gitlab.com/rawaaaa/projet-devops-2025/badges/main/pipeline.svg)](https://gitlab.com/rawaaaa/projet-devops-2025/pipelines)
+
+**Stages:**
+1. **Build:** Docker image compilation
+2. **Test:** Automated unit tests
+3. **Deploy:** Automatic deployment to Vercel
+
+**Status:** All stages passing ✅
+
+## Features
+- ✅ User authentication (login/register)
+- ✅ Task CRUD operations
+- ✅ Real-time updates with Socket.io
+- ✅ Responsive design
+- ✅ Docker containerization
+- ✅ Automated CI/CD pipeline
+- ✅ Cloud deployment
+
+## Technologies Used
+- **Backend:** Node.js, Express.js
+- **Frontend:** HTML5, CSS3, JavaScript
+- **Database:** MySQL
+- **Real-time:** Socket.io
+- **Containerization:** Docker, Docker Compose
+- **CI/CD:** GitLab CI/CD
+- **Deployment:** Vercel
+- **Version Control:** Git, GitHub
+
+## Documentation
+- `ARCHITECTURE.md` - Technical architecture and design
+- `DEPLOYMENT.md` - Detailed deployment guide
+- `USER_STORIES.md` - User stories and acceptance criteria
+
+## Contributing
+1. Create feature branch: `git checkout -b feature/your-feature`
+2. Commit with conventional commits: `git commit -m "feat(scope): description"`
+3. Create Merge Request to `develop`
+4. Code review required before merge
+5. All CI tests must pass
+
+## License
+MIT
 
 ## Suggestions for a good README
 

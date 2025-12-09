@@ -1,23 +1,76 @@
-# Task Manager Application
+# Deployment Guide
 
-Application de gestion de tâches avec Node.js, Express, MySQL et Socket.io
+## Vercel Deployment
 
-## 📋 Architecture
+### Prerequisites
+- Vercel account (https://vercel.com)
+- GitHub repository with your code
+- Environment variables configured
 
+### Environment Variables
+
+Set these in Vercel Project Settings → Environment Variables:
+
+```env
+# Database Configuration
+DB_HOST=your-mysql-host
+DB_PORT=3306
+DB_USER=your-db-user
+DB_PASSWORD=your-secure-password
+DB_NAME=task_manager
+
+# Node.js Configuration
+NODE_ENV=production
+PORT=3000
 ```
-┌─────────────────┐
-│   Node.js App   │  (Port 3000)
-│    (Express)    │
-└────────┬────────┘
-         │
-    ┌────▼────┐
-    │  MySQL  │  (Port 3306)
-    └─────────┘
-```
 
-## 🚀 Démarrage rapide
+**Note:** For MySQL, you can use:
+- Vercel's managed databases (if available)
+- AWS RDS
+- DigitalOcean Managed Databases
+- Other cloud MySQL providers
 
-### Avec Docker Compose (Recommandé)
+### Automatic Deployment (Recommended)
+
+1. **Connect GitHub Repository:**
+   - Go to Vercel → Add New Project
+   - Select your GitHub repository (wael-khadraoui/devops)
+   - Import
+
+2. **Configure Build Settings:**
+   - **Framework Preset:** Other
+   - **Build Command:** `npm install && npm test`
+   - **Output Directory:** (leave empty)
+   - **Install Command:** `npm install`
+
+3. **Deploy:**
+   - Vercel auto-deploys on every push to `main`
+   - Preview deployments for pull requests
+   - Automatic rollback on failures
+
+### Manual Deployment via GitLab CI/CD
+
+Deployment is triggered via webhook from GitLab CI/CD:
+
+1. **Get Vercel Deploy Hook:**
+   - Vercel Project → Settings → Git → Deploy Hooks
+   - Create hook for `main` branch
+   - Copy the URL
+
+2. **Set GitLab CI Variable:**
+   - GitLab Project → Settings → CI/CD → Variables
+   - Add `VERCEL_DEPLOY_HOOK` with the webhook URL
+   - Mark as **Masked**
+
+3. **Pipeline Trigger:**
+   - Push to `main` branch
+   - Pipeline runs: Build → Test → Deploy
+   - `deploy_vercel` job triggers Vercel webhook
+   - Vercel builds and deploys your app
+
+### Deployment with Docker (Alternative)
+
+If using your own server instead of Vercel:
 
 1. **Cloner le projet**
 ```bash
