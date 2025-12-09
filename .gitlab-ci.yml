@@ -11,7 +11,7 @@ before_script:
   - echo "Pipeline starting..."
 
 # -------------------------
-# 1) BUILD IMAGE
+# 1) BUILD & PUSH IMAGE
 # -------------------------
 build_app:
   stage: build
@@ -19,9 +19,13 @@ build_app:
   services:
     - docker:dind
   script:
+    - echo "Logging in to Docker Registry..."
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo "Building Docker image..."
     - docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
-    - echo "Docker image built successfully"
+    - echo "Pushing image to registry..."
+    - docker push $DOCKER_IMAGE:$DOCKER_TAG
+    - echo "Success - Image pushed to registry"
   only:
     - develop
     - main
