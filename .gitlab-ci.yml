@@ -82,10 +82,7 @@ deploy_railway:
           echo "Missing RAILWAY_PROJECT_ID in CI variables"; exit 1; fi
         echo "Writing Railway config with token..."
         mkdir -p ~/.railway
-        cat > ~/.railway/config.json <<'EOF'
-{"user":{"id":null,"email":null,"token":"TOKEN_PLACEHOLDER"},"team":null,"environment":null}
-EOF
-        sed -i "s/TOKEN_PLACEHOLDER/$RAILWAY_TOKEN/" ~/.railway/config.json
+        printf '{"user":{"id":null,"email":null,"token":"%s"},"team":null,"environment":null}\n' "$RAILWAY_TOKEN" > ~/.railway/config.json
         cat ~/.railway/config.json
         echo "Running whoami..."
         railway whoami || { echo "whoami failed"; exit 1; }
